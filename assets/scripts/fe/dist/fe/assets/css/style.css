@@ -1,0 +1,70 @@
+/* line 1, ../sass/components/_navigation.scss */
+.navbar {
+  border-bottom: 1px solid #ccc;
+}
+/* line 11, ../sass/components/_navigation.scss */
+.navbar-nav {
+  flex-direction: row;
+  justify-content: space-between;
+  min-width: 24%;
+}
+/* line 17, ../sass/components/_navigation.scss */
+.navbar-nav li a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+/* line 22, ../sass/components/_navigation.scss */
+.navbar-nav li a i {
+  margin-right: 4px;
+}
+/* line 30, ../sass/components/_navigation.scss */
+.navbar-user button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  padding: 8px 16px;
+  width: 10rem;
+  border-radius: 4px;
+  box-shadow: none;
+}
+/* line 40, ../sass/components/_navigation.scss */
+.navbar-user button .image {
+  background-size: cover;
+  background-position: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+}
+/* line 48, ../sass/components/_navigation.scss */
+.navbar-user button:hover {
+  cursor: pointer;
+}
+
+/* line 1, ../sass/pages/_dashboard.scss */
+.left {
+  width: 70%;
+}
+
+/* line 5, ../sass/pages/_dashboard.scss */
+.right {
+  width: 30%;
+}
+
+/* line 1, ../sass/pages/_payroll.scss */
+.payroll {
+  display: flex;
+}
+/* line 4, ../sass/pages/_payroll.scss */
+.payroll-list {
+  width: 30%;
+}
+/* line 9, ../sass/pages/_payroll.scss */
+.payroll-list ul li a.active {
+  background-color: #ccc;
+}
+/* line 17, ../sass/pages/_payroll.scss */
+.payroll-detail {
+  width: 70%;
+}

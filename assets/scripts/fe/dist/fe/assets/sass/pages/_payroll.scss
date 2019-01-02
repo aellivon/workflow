@@ -1,0 +1,20 @@
+.payroll {
+  display: flex;
+
+  &-list {
+    width: 30%;
+    ul {
+      li {
+        a {
+          &.active {
+            background-color: #ccc;
+          }
+        }
+      }
+    }
+  }
+
+  &-detail {
+    width: 70%;
+  }
+}
