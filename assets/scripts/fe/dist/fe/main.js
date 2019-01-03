@@ -898,7 +898,11 @@ function PayrollRedirect(t) {
                     // `payroll.plist` shouldn't be assigned in this function
                     _a.sent();
                     _a.label = 2;
-                case 2: return [2 /*return*/, state.target('payroll-detail', { id: payroll.plist[0].id })];
+                case 2:
+                    if (payroll.plist.length !== 0) {
+                        return [2 /*return*/, state.target('payroll-detail', { id: payroll.plist[0].id })];
+                    }
+                    return [2 /*return*/];
             }
         });
     });
@@ -1043,7 +1047,7 @@ module.exports = ""
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<ul>\n  <li *ngFor=\"let p of payrollservice.plist\">\n    <a uiSref=\"payroll-detail\" [uiParams]=\"{id:p.id}\" uiSrefActive=\"active\">{{ p.id }}</a>\n  </li>\n</ul>"
+module.exports = "<ul *ngIf=\"payrollservice.plist.length > 0\">\n  <li *ngFor=\"let p of payrollservice.plist\">\n    <a uiSref=\"payroll-detail\" [uiParams]=\"{id:p.id}\" uiSrefActive=\"active\">{{ p.id }}</a>\n  </li>\n</ul>\n\n<p [hidden]=\"payrollservice.plist.length > 0\">No payroll list</p>"
 
 /***/ }),
 
@@ -1171,6 +1175,7 @@ var PAYROLL_STATES = [
     {
         name: 'payroll',
         url: '/payroll/',
+        views: Object(_commons_utils_layout_utils__WEBPACK_IMPORTED_MODULE_0__["NavContent"])(_payroll_payroll_component__WEBPACK_IMPORTED_MODULE_2__["PayrollComponent"]),
         onEnter: _commons_utils_security_utils__WEBPACK_IMPORTED_MODULE_1__["PayrollRedirect"]
     },
     {
@@ -1202,7 +1207,7 @@ module.exports = ""
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container pt-5 payroll\">\n\n  <section class=\"payroll-list\">\n    <app-payroll-list></app-payroll-list>\n  </section>\n\n  <section class=\"payroll-detail\">\n    <p>Name : {{ payroll.user.first_name }} {{ payroll.user.last_name }}</p>\n    <p>Email: {{ payroll.user.email }}</p>\n    <p>Job : {{ payroll.user.position }}</p>\n    <p>Date: {{ payroll.date_from }} to {{ payroll.date_to }}</p>\n    <p>Payroll number: {{ payroll.id }}</p>\n\n    <table>\n      <thead>\n        <tr>\n          <th style=\"width: 145px\">Items:</th>\n          <th>Amount:</th>\n        </tr>\n      </thead>\n      <tbody>\n        <tr>\n          <td>Gross Amount:</td>\n          <td>{{ payroll.gross_pay }}</td>\n        </tr>\n        <tr>\n          <td>Deductions:</td>\n          <td>\n            <div *ngFor=\"let d of payroll.user.deductions\">\n              {{ d.name }} : {{ d.ee }}\n            </div>\n            <div *ngFor=\"let d of payroll.user.plans\">\n              {{ d.name }} : {{ d.monthly_ammort }}\n            </div>\n          </td>\n        </tr>\n\n        <tr>\n          <td>Total Deductions:</td>\n          <td>{{ payroll.total_deduction }}</td>\n        </tr>\n        <tr>\n          <td>Net Amount:</td>\n          <td>{{ payroll.net_pay }}</td>\n        </tr>\n      </tbody>\n    </table>\n  </section>\n\n</div>"
+module.exports = "<div class=\"container pt-5 payroll\">\n\n  <section class=\"payroll-list\">\n    <app-payroll-list></app-payroll-list>\n  </section>\n\n  <section class=\"payroll-detail\" *ngIf=\"state.params.id\">\n    <p>Name : {{ payroll.user.first_name }} {{ payroll.user.last_name }}</p>\n    <p>Email: {{ payroll.user.email }}</p>\n    <p>Job : {{ payroll.user.position }}</p>\n    <p>Date: {{ payroll.date_from }} to {{ payroll.date_to }}</p>\n    <p>Payroll number: {{ payroll.id }}</p>\n\n    <table>\n      <thead>\n        <tr>\n          <th style=\"width: 145px\">Items:</th>\n          <th>Amount:</th>\n        </tr>\n      </thead>\n      <tbody>\n        <tr>\n          <td>Gross Amount:</td>\n          <td>{{ payroll.gross_pay }}</td>\n        </tr>\n        <tr>\n          <td>Deductions:</td>\n          <td>\n            <div *ngFor=\"let d of payroll.user.deductions\">\n              {{ d.name }} : {{ d.ee }}\n            </div>\n            <div *ngFor=\"let d of payroll.user.plans\">\n              {{ d.name }} : {{ d.monthly_ammort }}\n            </div>\n          </td>\n        </tr>\n\n        <tr>\n          <td>Total Deductions:</td>\n          <td>{{ payroll.total_deduction }}</td>\n        </tr>\n        <tr>\n          <td>Net Amount:</td>\n          <td>{{ payroll.net_pay }}</td>\n        </tr>\n      </tbody>\n    </table>\n  </section>\n  <div class=\"payroll-detail\" [hidden]=\"state.params.id\">\n    No payroll atm..\n  </div>\n\n</div>"
 
 /***/ }),
 
@@ -1241,9 +1246,11 @@ var PayrollComponent = /** @class */ (function () {
     }
     PayrollComponent.prototype.ngOnInit = function () {
         var _this = this;
-        // get payroll details from the backend
-        this.payrollservice.detail(this.state.params.id)
-            .subscribe(function (resp) { _this.payroll = new _commons_models_payroll_models__WEBPACK_IMPORTED_MODULE_3__["Payroll"](resp); });
+        if (this.state.params.id) {
+            // get payroll details from the backend
+            this.payrollservice.detail(this.state.params.id)
+                .subscribe(function (resp) { _this.payroll = new _commons_models_payroll_models__WEBPACK_IMPORTED_MODULE_3__["Payroll"](resp); });
+        }
     };
     PayrollComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
