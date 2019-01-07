@@ -159,7 +159,7 @@ var AppModule = /** @class */ (function () {
 /*!****************************************************!*\
   !*** ./src/app/commons/constants/api.constants.ts ***!
   \****************************************************/
-/*! exports provided: USERS, AUTH_USER, AUTH_LOGIN, PAYROLL */
+/*! exports provided: USERS, AUTH_USER, AUTH_LOGIN, SLACKAUTH, SLACKAUTH_CONFIG, SLACKAUTH_USER_TOKEN, PAYROLL */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -167,6 +167,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "USERS", function() { return USERS; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AUTH_USER", function() { return AUTH_USER; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AUTH_LOGIN", function() { return AUTH_LOGIN; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SLACKAUTH", function() { return SLACKAUTH; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SLACKAUTH_CONFIG", function() { return SLACKAUTH_CONFIG; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SLACKAUTH_USER_TOKEN", function() { return SLACKAUTH_USER_TOKEN; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PAYROLL", function() { return PAYROLL; });
 /* harmony import */ var _utils_http_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/http.utils */ "./src/app/commons/utils/http.utils.ts");
 
@@ -177,6 +180,11 @@ var USERS = '/api/users/';
  */
 var AUTH_USER = Object(_utils_http_utils__WEBPACK_IMPORTED_MODULE_0__["urlsafe"])(USERS, 'auth');
 var AUTH_LOGIN = Object(_utils_http_utils__WEBPACK_IMPORTED_MODULE_0__["urlsafe"])(AUTH_USER, 'login');
+/* SLACK AUTH ENDPOINTS
+ */
+var SLACKAUTH = Object(_utils_http_utils__WEBPACK_IMPORTED_MODULE_0__["urlsafe"])(AUTH_USER, 'slack');
+var SLACKAUTH_CONFIG = Object(_utils_http_utils__WEBPACK_IMPORTED_MODULE_0__["urlsafe"])(SLACKAUTH, 'config');
+var SLACKAUTH_USER_TOKEN = Object(_utils_http_utils__WEBPACK_IMPORTED_MODULE_0__["urlsafe"])(SLACKAUTH, 'token');
 /* PAYROLL ENDPOINTS
  */
 var PAYROLL = '/api/payroll/';
@@ -530,6 +538,74 @@ var AuthService = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./src/app/commons/services/auth/slack.service.ts":
+/*!********************************************************!*\
+  !*** ./src/app/commons/services/auth/slack.service.ts ***!
+  \********************************************************/
+/*! exports provided: SlackService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SlackService", function() { return SlackService; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
+/* harmony import */ var _utils_http_utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/http.utils */ "./src/app/commons/utils/http.utils.ts");
+/* harmony import */ var _constants_api_constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../constants/api.constants */ "./src/app/commons/constants/api.constants.ts");
+/* harmony import */ var _auth_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./auth.service */ "./src/app/commons/services/auth/auth.service.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (undefined && undefined.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+
+
+var SlackService = /** @class */ (function () {
+    function SlackService(http, auth) {
+        this.http = http;
+        this.auth = auth;
+    }
+    /* SLACK CONFIG
+     * @desc : returns the slack auth configuration
+     *         set from the backend.
+     */
+    SlackService.prototype.getConfig = function () {
+        var _this = this;
+        return this.http.get(_constants_api_constants__WEBPACK_IMPORTED_MODULE_3__["SLACKAUTH_CONFIG"])
+            .toPromise()
+            .then(function (resp) { _this.config = resp; return resp; });
+    };
+    /* USER TOKEN
+     * @desc : Get user token using the slack token
+     */
+    SlackService.prototype.getUserToken = function (slackToken) {
+        var _this = this;
+        return this.http.get(Object(_utils_http_utils__WEBPACK_IMPORTED_MODULE_2__["urlsafe"])(_constants_api_constants__WEBPACK_IMPORTED_MODULE_3__["SLACKAUTH_USER_TOKEN"], slackToken))
+            .toPromise()
+            .then(function (resp) { _this.auth.setToken(resp); return resp; })
+            .catch(function (err) { return Promise.reject(err); });
+    };
+    SlackService = __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])({
+            providedIn: 'root'
+        }),
+        __metadata("design:paramtypes", [_angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpClient"],
+            _auth_service__WEBPACK_IMPORTED_MODULE_4__["AuthService"]])
+    ], SlackService);
+    return SlackService;
+}());
+
+
+
+/***/ }),
+
 /***/ "./src/app/commons/services/auth/user.service.ts":
 /*!*******************************************************!*\
   !*** ./src/app/commons/services/auth/user.service.ts ***!
@@ -807,7 +883,7 @@ function NavContent(content) {
 /*!*************************************************!*\
   !*** ./src/app/commons/utils/security.utils.ts ***!
   \*************************************************/
-/*! exports provided: LoginRequired, Disconnect, PayrollRedirect */
+/*! exports provided: LoginRequired, Disconnect, PayrollRedirect, SlackAuthRedirect */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -815,10 +891,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LoginRequired", function() { return LoginRequired; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Disconnect", function() { return Disconnect; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PayrollRedirect", function() { return PayrollRedirect; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SlackAuthRedirect", function() { return SlackAuthRedirect; });
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _services_auth_auth_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/auth/auth.service */ "./src/app/commons/services/auth/auth.service.ts");
-/* harmony import */ var _services_payroll_payroll_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/payroll/payroll.service */ "./src/app/commons/services/payroll/payroll.service.ts");
+/* harmony import */ var _services_auth_slack_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/auth/slack.service */ "./src/app/commons/services/auth/slack.service.ts");
+/* harmony import */ var _services_payroll_payroll_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/payroll/payroll.service */ "./src/app/commons/services/payroll/payroll.service.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -857,6 +935,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 
 
+
 /* LOGIN REQUIRED
  * @desc : callback function that will check and will not pass
  *         users that are not logged in.
@@ -884,7 +963,7 @@ function PayrollRedirect(t) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    auth = t.injector().get(_services_auth_auth_service__WEBPACK_IMPORTED_MODULE_1__["AuthService"]), payroll = t.injector().get(_services_payroll_payroll_service__WEBPACK_IMPORTED_MODULE_2__["PayrollService"]), state = t.router.stateService;
+                    auth = t.injector().get(_services_auth_auth_service__WEBPACK_IMPORTED_MODULE_1__["AuthService"]), payroll = t.injector().get(_services_payroll_payroll_service__WEBPACK_IMPORTED_MODULE_3__["PayrollService"]), state = t.router.stateService;
                     if (!auth.authenticated())
                         return [2 /*return*/, state.target('login')];
                     if (!lodash__WEBPACK_IMPORTED_MODULE_0__["isEmpty"](payroll.plist)) return [3 /*break*/, 2];
@@ -903,6 +982,35 @@ function PayrollRedirect(t) {
                         return [2 /*return*/, state.target('payroll-detail', { id: payroll.plist[0].id })];
                     }
                     return [2 /*return*/];
+            }
+        });
+    });
+}
+/* SLACK LOGIN REDIRECT
+ * @desc : callback receiver for requests coming from
+ *         slack server.
+ */
+function SlackAuthRedirect(t, $state) {
+    return __awaiter(this, void 0, void 0, function () {
+        var auth, slack, state, token;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    auth = t.injector().get(_services_auth_auth_service__WEBPACK_IMPORTED_MODULE_1__["AuthService"]), slack = t.injector().get(_services_auth_slack_service__WEBPACK_IMPORTED_MODULE_2__["SlackService"]), state = t.router.stateService, token = t._targetState._params.token;
+                    if (!token) return [3 /*break*/, 2];
+                    // validate if the access token is valid. retrieve
+                    // the user token from the backend and redirect
+                    // the user to the dashboard.
+                    return [4 /*yield*/, slack.getUserToken(token)];
+                case 1:
+                    // validate if the access token is valid. retrieve
+                    // the user token from the backend and redirect
+                    // the user to the dashboard.
+                    _a.sent();
+                    // token is invalid or other error.
+                    //if(!auth.authenticated()) return state.target('login');
+                    return [2 /*return*/, state.target('dashboard')];
+                case 2: return [2 /*return*/, state.target('login')];
             }
         });
     });
@@ -1417,7 +1525,7 @@ module.exports = ""
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<form [formGroup]=\"form.form\" (ngSubmit)=\"onSubmit(form.form)\">\n    <span [hidden]=\"!form.err\">Invalid Email/Password. Please try again.</span>\n    <div>\n        <label>Email:</label>\n        <input formControlName=\"email\" type=\"text\">\n        <span [hidden]=\"form.valid('email')\">Invalid email format.</span>\n    </div>\n    <div>\n        <label>Password:</label>\n        <input formControlName=\"password\" type=\"password\">\n        <span [hidden]=\"form.valid('password')\">Password is required.</span>\n    </div>\n    <button type=\"submit\">Login</button>\n</form>"
+module.exports = "<form [formGroup]=\"form.form\" (ngSubmit)=\"onSubmit(form.form)\">\n    <span [hidden]=\"!form.err\">Invalid Email/Password. Please try again.</span>\n    <div>\n        <label>Email:</label>\n        <input formControlName=\"email\" type=\"text\">\n        <span [hidden]=\"form.valid('email')\">Invalid email format.</span>\n    </div>\n    <div>\n        <label>Password:</label>\n        <input formControlName=\"password\" type=\"password\">\n        <span [hidden]=\"form.valid('password')\">Password is required.</span>\n    </div>\n    <button type=\"submit\">Login</button>\n</form>\n\n<a href=\"{{ slack.config.authorize_url }}\">Login via Slack</a>"
 
 /***/ }),
 
@@ -1436,6 +1544,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _commons_models_login_models__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../commons/models/login.models */ "./src/app/commons/models/login.models.ts");
 /* harmony import */ var _commons_forms_login_forms__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../commons/forms/login.forms */ "./src/app/commons/forms/login.forms.ts");
 /* harmony import */ var _commons_services_auth_auth_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../commons/services/auth/auth.service */ "./src/app/commons/services/auth/auth.service.ts");
+/* harmony import */ var _commons_services_auth_slack_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../commons/services/auth/slack.service */ "./src/app/commons/services/auth/slack.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1450,14 +1559,19 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
+
 var LoginComponent = /** @class */ (function () {
-    function LoginComponent(auth, state) {
+    function LoginComponent(auth, state, slack) {
         this.auth = auth;
         this.state = state;
+        this.slack = slack;
     }
     LoginComponent.prototype.ngOnInit = function () {
+        // load slack config
+        this.slack.getConfig();
         // initialize the form.
         this.form = new _commons_forms_login_forms__WEBPACK_IMPORTED_MODULE_3__["LoginForm"](new _commons_models_login_models__WEBPACK_IMPORTED_MODULE_2__["Login"]);
+        console.log(this.slack.config);
     };
     LoginComponent.prototype.onSubmit = function (_a) {
         var _this = this;
@@ -1481,7 +1595,8 @@ var LoginComponent = /** @class */ (function () {
             styles: [__webpack_require__(/*! ./login.component.css */ "./src/app/components/public/login/login.component.css")]
         }),
         __metadata("design:paramtypes", [_commons_services_auth_auth_service__WEBPACK_IMPORTED_MODULE_4__["AuthService"],
-            _uirouter_angular__WEBPACK_IMPORTED_MODULE_1__["StateService"]])
+            _uirouter_angular__WEBPACK_IMPORTED_MODULE_1__["StateService"],
+            _commons_services_auth_slack_service__WEBPACK_IMPORTED_MODULE_5__["SlackService"]])
     ], LoginComponent);
     return LoginComponent;
 }());
@@ -1562,6 +1677,11 @@ var PUBLIC_STATES = [
         name: 'logout',
         url: '/logout/',
         onEnter: _commons_utils_security_utils__WEBPACK_IMPORTED_MODULE_1__["Disconnect"]
+    },
+    {
+        name: 'slackauthredirect',
+        url: '/auth/slack/redirect/:token/',
+        onEnter: _commons_utils_security_utils__WEBPACK_IMPORTED_MODULE_1__["SlackAuthRedirect"]
     }
 ];
 
