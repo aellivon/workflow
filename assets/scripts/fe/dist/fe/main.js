@@ -262,6 +262,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var UserForm = /** @class */ (function () {
     function UserForm(data) {
+        this.submitted = false;
         /* Initialize the form builder
          */
         this.form = new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormBuilder"]().group({
@@ -276,12 +277,12 @@ var UserForm = /** @class */ (function () {
     /* Check if form field is valid
      */
     UserForm.prototype.valid = function (f) {
-        return !(!this.form.get(f).valid && this.form.get(f).touched);
+        return !(!this.form.get(f).valid && (this.form.get(f).touched || this.submitted));
     };
     /* Check if the form field has an error
      */
     UserForm.prototype.hasError = function (f, e) {
-        return this.form.get(f).hasError(e) && this.form.get(f).touched;
+        return this.form.get(f).hasError(e) && (this.form.get(f).touched || this.submitted);
     };
     /* DEFAULT VALUE
      * set the value of the form fields if there is a default value.
@@ -443,13 +444,11 @@ var User = /** @class */ (function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AuthService", function() { return AuthService; });
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
-/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
-/* harmony import */ var _constants_api_constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../constants/api.constants */ "./src/app/commons/constants/api.constants.ts");
-/* harmony import */ var _constants_conf_constants__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../constants/conf.constants */ "./src/app/commons/constants/conf.constants.ts");
-/* harmony import */ var _models_user_models__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../models/user.models */ "./src/app/commons/models/user.models.ts");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
+/* harmony import */ var _constants_api_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../constants/api.constants */ "./src/app/commons/constants/api.constants.ts");
+/* harmony import */ var _constants_conf_constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../constants/conf.constants */ "./src/app/commons/constants/conf.constants.ts");
+/* harmony import */ var _models_user_models__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../models/user.models */ "./src/app/commons/models/user.models.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -464,11 +463,10 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
-
 var AuthService = /** @class */ (function () {
     function AuthService(http) {
         this.http = http;
-        this.user = new _models_user_models__WEBPACK_IMPORTED_MODULE_5__["User"];
+        this.user = new _models_user_models__WEBPACK_IMPORTED_MODULE_4__["User"];
     }
     /* USER LOGIN
      * @desc : sends a request to the backend server to
@@ -477,7 +475,7 @@ var AuthService = /** @class */ (function () {
      */
     AuthService.prototype.login = function (creds) {
         var _this = this;
-        return this.http.post(_constants_api_constants__WEBPACK_IMPORTED_MODULE_3__["AUTH_LOGIN"], creds)
+        return this.http.post(_constants_api_constants__WEBPACK_IMPORTED_MODULE_2__["AUTH_LOGIN"], creds)
             .toPromise()
             .then(function (resp) { _this.setToken(resp); return resp; })
             .catch(function (err) { return Promise.reject(err); });
@@ -488,19 +486,19 @@ var AuthService = /** @class */ (function () {
      */
     AuthService.prototype.setToken = function (token) {
         // save the generated token to the local storage
-        window.localStorage[_constants_conf_constants__WEBPACK_IMPORTED_MODULE_4__["AUTH_KEY"]] = JSON.stringify(token);
+        window.localStorage[_constants_conf_constants__WEBPACK_IMPORTED_MODULE_3__["AUTH_KEY"]] = JSON.stringify(token);
         return;
     };
     AuthService.prototype.getToken = function () {
         // fetch the generated token from the storage
-        var d = window.localStorage[_constants_conf_constants__WEBPACK_IMPORTED_MODULE_4__["AUTH_KEY"]];
+        var d = window.localStorage[_constants_conf_constants__WEBPACK_IMPORTED_MODULE_3__["AUTH_KEY"]];
         if (!d)
             return null;
         return JSON.parse(d);
     };
     AuthService.prototype.rmToken = function () {
         // clear the token from the local storage.
-        window.localStorage.removeItem(_constants_conf_constants__WEBPACK_IMPORTED_MODULE_4__["AUTH_KEY"]);
+        window.localStorage.removeItem(_constants_conf_constants__WEBPACK_IMPORTED_MODULE_3__["AUTH_KEY"]);
     };
     /* MANAGE USER INSTANCE
      * @desc : manage user instance.
@@ -512,13 +510,13 @@ var AuthService = /** @class */ (function () {
     AuthService.prototype.setuser = function () {
         var _this = this;
         // save the user's instance
-        return this.http.get(_constants_api_constants__WEBPACK_IMPORTED_MODULE_3__["AUTH_USER"])
+        return this.http.get(_constants_api_constants__WEBPACK_IMPORTED_MODULE_2__["AUTH_USER"])
             .toPromise()
-            .then(function (resp) { _this.user = new _models_user_models__WEBPACK_IMPORTED_MODULE_5__["User"](resp); });
+            .then(function (resp) { _this.user = new _models_user_models__WEBPACK_IMPORTED_MODULE_4__["User"](resp); });
     };
     AuthService.prototype.getuser = function () {
         // fetch the user instance
-        if (lodash__WEBPACK_IMPORTED_MODULE_0__["isEmpty"](this.user) || lodash__WEBPACK_IMPORTED_MODULE_0__["some"](this.user, lodash__WEBPACK_IMPORTED_MODULE_0__["isEmpty"])) {
+        if (this.user.id == null) {
             // sends a request from the backend to
             // get the data.
             this.setuser();
@@ -526,10 +524,10 @@ var AuthService = /** @class */ (function () {
         return this.user;
     };
     AuthService = __decorate([
-        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"])({
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])({
             providedIn: 'root'
         }),
-        __metadata("design:paramtypes", [_angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"]])
+        __metadata("design:paramtypes", [_angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpClient"]])
     ], AuthService);
     return AuthService;
 }());
@@ -1798,6 +1796,41 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 var __metadata = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 
 
 
@@ -1811,21 +1844,31 @@ var SettingComponent = /** @class */ (function () {
         this.userservice = userservice;
     }
     SettingComponent.prototype.ngOnInit = function () {
-        var _this = this;
-        // initialize the form.
-        this.form = new _commons_forms_user_forms__WEBPACK_IMPORTED_MODULE_2__["UserForm"](new _commons_models_user_models__WEBPACK_IMPORTED_MODULE_3__["User"]);
-        // TODO: improve this part by removing the setTimeout hack.
-        // this is working but in efficient as i set 30millisecond
-        // to wait for the user data to load. (will not work on slow
-        // speed internet connection). Use async/await method and
-        // find the right/more accurate timing.
-        setTimeout(function () {
-            _this.form.defaultValue(_this.auth.user);
-        }, 60);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        // initialize the form.
+                        this.form = new _commons_forms_user_forms__WEBPACK_IMPORTED_MODULE_2__["UserForm"](new _commons_models_user_models__WEBPACK_IMPORTED_MODULE_3__["User"]);
+                        if (!(this.auth.user.id == null)) return [3 /*break*/, 2];
+                        // get user information from the backend. (sync)
+                        return [4 /*yield*/, this.auth.setuser()];
+                    case 1:
+                        // get user information from the backend. (sync)
+                        _a.sent();
+                        _a.label = 2;
+                    case 2:
+                        this.form.defaultValue(this.auth.user);
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     SettingComponent.prototype.onSubmit = function (_a) {
         var _this = this;
         var value = _a.value, valid = _a.valid;
+        // initiate submission of form.
+        this.form.submitted = true;
         // send the form data to the backend if the value
         // format are valid.
         if (valid) {
