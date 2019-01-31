@@ -86,7 +86,7 @@ class StandupAdmin(JSONParser, admin.ModelAdmin):
 
     list_display = ('date_created', 'date_updated', 'user', 'project', 'get_total_hours', 'get_issues', 'get_needs_checking')
     search_fields = ('user__email', 'user__first_name', 'user__last_name', 'project__name')
-    list_filter = ('user__first_name', 'project__name', ('date_updated', DateRangeFilter),)
+    list_filter = (('date_created', DateRangeFilter), 'user__first_name', 'project__name',)
     editable_fields = ('date_created', 'date_updated')
     readonly_fields = ('raw_data',)
     exclude = ('raw',)
