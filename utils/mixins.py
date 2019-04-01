@@ -9,9 +9,12 @@ from urllib.parse import quote
 
 from django.conf import settings
 from django.core.files.base import ContentFile
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import get_template
 from django.utils import timezone
 
+from xhtml2pdf import pisa
 
 class Query(object):
     """ helper class used for querying with
@@ -38,7 +41,41 @@ class Query(object):
             keyword arguments.
         """
         return _model.objects.filter(**kwargs)
-    
+
+class PDFHelper(object):
+    """ Helper on pdf related stuffs
+    """
+    def produce_pdf(self, data):
+        
+        report_phrase = f"from {data.get('date_from')} to {data.get('date_to')}"
+        employee_name = f"{data.get('user').get('first_name')} {data.get('user').get('last_name')}"
+
+        title = f"payroll of {employee_name} {report_phrase}" 
+        # # fetching and setting up necessary data
+        context = {'data': data, 'title': title}
+        template = get_template('report/pdf_report.html')
+
+        # rendering of template
+        html  = template.render(context)
+        # This produces a file called buffer.pdf so it can write the file there.
+        file = open('buffer.pdf', "w+b")
+
+        # Convert to html to PDF
+        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=file, encoding='utf-8')
+        file.seek(0)
+        pdf = file.read()
+
+        # closing file reader
+        file.close()
+
+        # Define the response
+        response = HttpResponse(pdf, content_type='application/pdf')
+
+        # These are the headers that will let the response know that this file must
+        #   must be downloaded once the linked is accessed and redirection
+        response['Content-Disposition'] = f'attachment; filename="{title}.pdf"'
+
+        return response 
 
 class ImageDownload(object):
     """ image downloader
