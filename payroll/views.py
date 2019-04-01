@@ -47,6 +47,6 @@ class PayrollReport(Query, PDFHelper, ViewSet):
         )
 
         # Passes the data and produces the pdf based on those data
-        return self.produce_pdf(serializer.data)
+        return self.produce_payroll_pdf(serializer.data)
 
 
