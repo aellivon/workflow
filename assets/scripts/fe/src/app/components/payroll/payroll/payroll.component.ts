@@ -25,4 +25,7 @@ export class PayrollComponent implements OnInit {
     }
   }
 
+  downloadPDF() {
+    this.payrollservice.downloadPDF(this.state.params.id);
+  }
 }

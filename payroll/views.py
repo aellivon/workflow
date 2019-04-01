@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 
-from utils.mixins import Query
+from utils.mixins import Query, PDFHelper
 from .serializers import PayrollSerializer
 
 
@@ -30,3 +30,23 @@ class Payroll(Query, ViewSet):
             many=True,
         )
         return Response(serializer.data, status=200)
+
+class PayrollReport(Query, PDFHelper, ViewSet):
+    """
+        Views regarding the report of a payroll
+    """
+
+    serializer_class = PayrollSerializer
+
+    def download_pdf(self, *args, **kwargs):
+        # Produces pdf and downloads it
+
+        # This should get the data that we are going to access
+        serializer = self.serializer_class(
+            instance=self._get(self._model, **kwargs)
+        )
+
+        # Passes the data and produces the pdf based on those data
+        return self.produce_pdf(serializer.data)
+
+
