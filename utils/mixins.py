@@ -45,7 +45,7 @@ class Query(object):
 class PDFHelper(object):
     """ Helper on pdf related stuffs
     """
-    def produce_pdf(self, data):
+    def produce_payroll_pdf(self, data):
         
         report_phrase = f"from {data.get('date_from')} to {data.get('date_to')}"
         employee_name = f"{data.get('user').get('first_name')} {data.get('user').get('last_name')}"
@@ -53,8 +53,12 @@ class PDFHelper(object):
         title = f"payroll of {employee_name} {report_phrase}" 
         # # fetching and setting up necessary data
         context = {'data': data, 'title': title}
-        template = get_template('report/pdf_report.html')
+        template = get_template('report/payroll_report.html.html')
 
+        return self._produce_pdf(context, template)
+
+    def _produce_pdf(self, context, template):
+        
         # rendering of template
         html  = template.render(context)
         # This produces a file called buffer.pdf so it can write the file there.
@@ -75,7 +79,7 @@ class PDFHelper(object):
         #   must be downloaded once the linked is accessed and redirection
         response['Content-Disposition'] = f'attachment; filename="{title}.pdf"'
 
-        return response 
+        return response
 
 class ImageDownload(object):
     """ image downloader
