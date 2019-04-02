@@ -3,8 +3,9 @@ import { HttpClient } from '@angular/common/http';
 
 import { urlsafe, queryparams } from '../../utils/http.utils';
 import { PAYROLL, PAYROLL_REPORT } from '../../constants/api.constants';
+import { downloadFileHanlder } from '../../utils/file.utils';
 
-
+import { HttpHeaders } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
@@ -33,12 +34,17 @@ export class PayrollService {
   }
 
  
-  downloadPDF(id){
+  downloadPDF(id, fileName = "default"){
      /* Automatically download the pdf 
-        Vanilla javascript so I can access the django template outside the angular scope. 
-        Note: This doesn't "redirect" the user to the page. It just downloads the pdf.
      */
     
-    window.location.href = PAYROLL_REPORT(id);
+    // instead of using a simple redirection to download the request.
+    //  Use a get request so that the inteceptors can catch it and attach token. 
+
+    
+    this.http.get(PAYROLL_REPORT(id), { responseType: 'blob'})
+      .subscribe(
+        data => { downloadFileHanlder(data, fileName) }
+      )
   }
 }
