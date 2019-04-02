@@ -69,10 +69,7 @@ class PDFHelper(object):
 
         # create a pdf
         pisaStatus = pisa.CreatePDF(html, dest=response)
-        
-        if pisaStatus.err:
-            return HttpResponse('We had some errors <pre>' + html + '</pre>')
-            
+
         return response
 
 class PermissionHelper(object):
