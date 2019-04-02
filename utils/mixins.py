@@ -10,7 +10,7 @@ from urllib.parse import quote
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, _get_queryset
 from django.template.loader import get_template
 from django.utils import timezone
 
@@ -53,33 +53,46 @@ class PDFHelper(object):
         title = f"payroll of {employee_name} {report_phrase}" 
         # # fetching and setting up necessary data
         context = {'data': data, 'title': title}
-        template = get_template('report/payroll_report.html.html')
+        template = get_template('report/payroll_report.html')
 
         return self._produce_pdf(context, template)
 
     def _produce_pdf(self, context, template):
+
+        # Create a Django response object, and specify content_type as pdf
+        response = HttpResponse(content_type='application/pdf')
+        # Define that this is an attachment. 
+        response['Content-Disposition'] = 'attachment;'
+
+        # find the template and render it.
+        html = template.render(context)
+
+        # create a pdf
+        pisaStatus = pisa.CreatePDF(html, dest=response)
         
-        # rendering of template
-        html  = template.render(context)
-        # This produces a file called buffer.pdf so it can write the file there.
-        file = open('buffer.pdf', "w+b")
-
-        # Convert to html to PDF
-        pisaStatus = pisa.CreatePDF(html.encode('utf-8'), dest=file, encoding='utf-8')
-        file.seek(0)
-        pdf = file.read()
-
-        # closing file reader
-        file.close()
-
-        # Define the response
-        response = HttpResponse(pdf, content_type='application/pdf')
-
-        # These are the headers that will let the response know that this file must
-        #   must be downloaded once the linked is accessed and redirection
-        response['Content-Disposition'] = f'attachment; filename="{title}.pdf"'
-
+        if pisaStatus.err:
+            return HttpResponse('We had some errors <pre>' + html + '</pre>')
+            
         return response
+
+class PermissionHelper(object):
+    """ Permissions helper
+    """
+
+    def check_get_query_result_if_exists(self, model, *args, **kwargs):
+        """
+            Checks if the query exists, return True if it exists, else false
+        """
+        # Allows dynamic get querysets
+        queryset = _get_queryset(model)
+
+        try:
+            # Put the args and kwargs in the filter for filtering
+            exists = queryset.get(*args, **kwargs)
+            return True
+        except queryset.model.DoesNotExist as e:
+            # If queryset does not exist. Return False
+            return False
 
 class ImageDownload(object):
     """ image downloader
