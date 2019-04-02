@@ -5,7 +5,7 @@ from .models import Payroll
 
 class PayrollObjectPermission(permissions.BasePermission, PermissionHelper):
     """
-        You only have the permission if the payroll object 
+        Only grant the permission if the payroll object 
         is the same as the logged in user.
     """
 
