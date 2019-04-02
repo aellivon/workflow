@@ -40,7 +40,6 @@ export class PayrollService {
     
     // instead of using a simple redirection to download the request.
     //  Use a get request so that the inteceptors can catch it and attach token. 
-
     
     this.http.get(PAYROLL_REPORT(id), { responseType: 'blob'})
       .subscribe(
