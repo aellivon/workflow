@@ -41,6 +41,7 @@ export class PayrollComponent implements OnInit {
 
   sendPDF(){
     this.sendingEmail = true;
+    this.emailCallbackMessage = "";
     this.payrollservice.sendPayrollReport(this.state.params.id)
     .then(
       data => {

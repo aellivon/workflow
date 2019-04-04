@@ -52,5 +52,4 @@ export class PayrollService {
     .then(resp => { return resp; })
     .catch(err => { return Promise.reject(err); });
   }
-
 }
