@@ -40,7 +40,9 @@ export class PayrollComponent implements OnInit {
   }
 
   sendPDF(){
+    // sendingEmail means that we have to disable the button
     this.sendingEmail = true;
+    // Reset message if it's still sending
     this.emailCallbackMessage = "";
     this.payrollservice.sendPayrollReport(this.state.params.id)
     .then(
