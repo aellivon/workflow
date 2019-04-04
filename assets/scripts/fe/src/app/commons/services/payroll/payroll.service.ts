@@ -46,4 +46,12 @@ export class PayrollService {
         data => { downloadFileHanlder(data, fileName) }
       )
   }
+
+  sendPayrollReport(id, fileName){
+    this.http.post(PAYROLL_REPORT(id), {"file_name": fileName})
+    .subscribe(
+      data => { console.log(data); }
+    )
+  }
+
 }
