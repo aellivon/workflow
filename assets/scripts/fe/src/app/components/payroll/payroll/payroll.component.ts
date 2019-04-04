@@ -11,6 +11,8 @@ import { Payroll } from '../../../commons/models/payroll.models';
 })
 export class PayrollComponent implements OnInit {
   private payroll = new Payroll;
+  private sendingEmail: boolean = false;
+  private emailCallbackMessage: string = "";
 
   constructor(
     private state          : StateService,
@@ -38,7 +40,30 @@ export class PayrollComponent implements OnInit {
   }
 
   sendPDF(){
+    this.sendingEmail = true;
     const file_name = this.getFileName();
-    this.payrollservice.sendPayrollReport(this.state.params.id, file_name);
+    this.payrollservice.sendPayrollReport(this.state.params.id, file_name)
+    .then(
+      data => {
+        console.log(data);
+        this.sendPDFGeneralCallback(true);
+      }
+    )
+    .catch(
+      errors => {
+        console.log(errors);
+        this.sendPDFGeneralCallback(false);
+      }
+    )
+  }
+
+  sendPDFGeneralCallback(success){
+    // General clean up on call back
+    this.sendingEmail = true;
+    if(success){
+      this.emailCallbackMessage = "Email is sent sucessfully.";
+    }else{
+      this.emailCallbackMessage = "Something went wrong in sending the email!";
+    }
   }
 }

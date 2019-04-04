@@ -60,7 +60,7 @@ class GeneratePayrollPDFTestCases(APITestCase):
         """
             Testing a valid user sending his own payroll.
         """
-        response = self.valid_client.post(self.url_to_test, format='json')
+        response = self.valid_client.get(self.url_to_test, format='json')
         self.assertEqual(200, response.status_code)
 
     def test_sending_a_payroll_report_with_unauthenticated_credentials(self):
@@ -68,7 +68,7 @@ class GeneratePayrollPDFTestCases(APITestCase):
              Test sending the payroll with unauthenticated credentials
         """
         unauth_client = APIClient()
-        response = unauth_client.post(self.url_to_test, format='json')
+        response = unauth_client.get(self.url_to_test, format='json')
         # Unauthorized client
         self.assertEqual(401, response.status_code)
 
@@ -76,7 +76,7 @@ class GeneratePayrollPDFTestCases(APITestCase):
         """
             Test sending the payroll with another credentials
         """
-        response = self.invalid_client.post(self.url_to_test, format='json')
+        response = self.invalid_client.get(self.url_to_test, format='json')
         # Forbidden Client
         self.assertEqual(403, response.status_code)
 

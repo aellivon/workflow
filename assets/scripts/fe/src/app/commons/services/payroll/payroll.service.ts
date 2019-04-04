@@ -48,10 +48,10 @@ export class PayrollService {
   }
 
   sendPayrollReport(id, fileName){
-    this.http.post(PAYROLL_REPORT(id), {"file_name": fileName})
-    .subscribe(
-      data => { console.log(data); }
-    )
+    return this.http.post(PAYROLL_REPORT(id), {"file_name": fileName})
+    .toPromise()
+    .then(resp => { return resp; })
+    .catch(err => { return Promise.reject(err); })
   }
 
 }

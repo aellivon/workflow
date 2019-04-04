@@ -52,7 +52,6 @@ class PayrollReport(Query, PDFHelper, MailHelper , ViewSet):
 
     def send_pdf(self, *args, **kwargs):
         
-                
         # This should get the data that we are going to access
         serializer = self.serializer_class(
             instance=self._get(self._model, **kwargs)
