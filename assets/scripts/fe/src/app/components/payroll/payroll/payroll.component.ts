@@ -59,7 +59,7 @@ export class PayrollComponent implements OnInit {
 
   sendPDFGeneralCallback(success){
     // General clean up on call back
-    this.sendingEmail = true;
+    this.sendingEmail = false;
     if(success){
       this.emailCallbackMessage = "Email is sent sucessfully.";
     }else{
