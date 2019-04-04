@@ -47,8 +47,8 @@ export class PayrollService {
       )
   }
 
-  sendPayrollReport(id, fileName){
-    return this.http.post(PAYROLL_REPORT(id), {"file_name": fileName})
+  sendPayrollReport(id){
+    return this.http.post(PAYROLL_REPORT(id), {})
     .toPromise()
     .then(resp => { return resp; })
     .catch(err => { return Promise.reject(err); })

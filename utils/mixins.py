@@ -2,7 +2,7 @@ import os
 import re
 import json
 from PIL import Image
-from io import BytesIO, StringIO
+from io import BytesIO
 
 from urllib.request import urlopen, Request
 from urllib.parse import quote

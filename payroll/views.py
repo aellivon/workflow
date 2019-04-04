@@ -32,7 +32,7 @@ class Payroll(Query, ViewSet):
         )
         return Response(serializer.data, status=200)
 
-class PayrollReport(Query, PDFHelper, MailHelper , ViewSet):
+class PayrollReport(Query, PDFHelper, MailHelper, ViewSet):
     """
         Views regarding the report of a payroll.
     """
@@ -51,7 +51,7 @@ class PayrollReport(Query, PDFHelper, MailHelper , ViewSet):
         return self.produce_payroll_pdf_as_a_response(serializer.data)
 
     def send_pdf(self, *args, **kwargs):
-        
+
         # This should get the data that we are going to access
         serializer = self.serializer_class(
             instance=self._get(self._model, **kwargs)

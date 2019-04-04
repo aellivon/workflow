@@ -41,8 +41,7 @@ export class PayrollComponent implements OnInit {
 
   sendPDF(){
     this.sendingEmail = true;
-    const file_name = this.getFileName();
-    this.payrollservice.sendPayrollReport(this.state.params.id, file_name)
+    this.payrollservice.sendPayrollReport(this.state.params.id)
     .then(
       data => {
         console.log(data);
