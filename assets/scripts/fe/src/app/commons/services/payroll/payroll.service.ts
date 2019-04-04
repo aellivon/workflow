@@ -5,7 +5,6 @@ import { urlsafe, queryparams } from '../../utils/http.utils';
 import { PAYROLL, PAYROLL_REPORT } from '../../constants/api.constants';
 import { downloadFileHanlder } from '../../utils/file.utils';
 
-import { HttpHeaders } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
@@ -48,10 +47,10 @@ export class PayrollService {
   }
 
   sendPayrollReport(id){
-    return this.http.post(PAYROLL_REPORT(id), {})
+    return this.http.post(PAYROLL_REPORT(id), null)
     .toPromise()
     .then(resp => { return resp; })
-    .catch(err => { return Promise.reject(err); })
+    .catch(err => { return Promise.reject(err); });
   }
 
 }

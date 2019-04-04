@@ -45,24 +45,21 @@ export class PayrollComponent implements OnInit {
     .then(
       data => {
         console.log(data);
-        this.sendPDFGeneralCallback(true);
+        this.sendPDFGeneralCallback();
+        this.emailCallbackMessage = "Email is sent sucessfully.";
       }
     )
     .catch(
       errors => {
         console.log(errors);
-        this.sendPDFGeneralCallback(false);
+        this.sendPDFGeneralCallback();
+        this.emailCallbackMessage = "Something went wrong in sending the email!";
       }
     )
   }
 
-  sendPDFGeneralCallback(success){
+  sendPDFGeneralCallback(){
     // General clean up on call back
     this.sendingEmail = false;
-    if(success){
-      this.emailCallbackMessage = "Email is sent sucessfully.";
-    }else{
-      this.emailCallbackMessage = "Something went wrong in sending the email!";
-    }
   }
 }
