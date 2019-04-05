@@ -6,6 +6,8 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from users.models import User
+from users.serializers import UserSerializer
+
 from .mixins import DailyStandup
 from .models import Standup, Done, Todo, Blocker
 
@@ -106,8 +108,31 @@ class StandupSerializer(DailyStandup, serializers.Serializer):
 
         return data
 
+class StandUpBlockers(serializers.ModelSerializer):
+
+    class Meta:
+        model = Blocker
+        fields = ('content', 'reference', 'is_fixed')
 
 
+class StandUpHistorySerializer(serializers.ModelSerializer):
+    """
+        Listin of all standups
+    """
 
+    user = UserSerializer()
+    # Only get the blockers since that's the only thing that the design needs!
+    standup_blockers = StandUpBlockers(read_only=True, many=True)
+    channel_name = serializers.ReadOnlyField(source='project.channel_name', read_only=True)
 
-
+    class Meta:
+        # Make the model the standup, better to make this s
+        model = Standup
+        fields = (
+            'channel_name',
+            'date_created', 
+            'user', 
+            'standup_blockers', 
+            'total_hours', 
+            'number_of_pending_issues'
+        )
