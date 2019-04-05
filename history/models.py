@@ -51,7 +51,7 @@ class Todo(models.Model):
 class Blocker(models.Model):
     """ task blockers. (#3)
     """
-    standup = models.ForeignKey('Standup', null=True, on_delete=models.CASCADE)
+    standup = models.ForeignKey('Standup', null=True, on_delete=models.CASCADE, related_name="standup_blockers")
     content = models.TextField(null=True, blank=True)
 
     reference = models.TextField(null=True, blank=True)
@@ -85,6 +85,13 @@ class Standup(DailyStandup, models.Model):
     def total_hours(self):
         hours = Done.objects.filter(standup=self).values_list('hours', flat=True)
         return sum(hours)
+
+    @property
+    def number_of_pending_issues(self):
+        """
+            Counts the number of issue that is not fixed
+        """
+        return Blocker.objects.filter(standup=self, is_fixed=False).count()
 
     def __str__(self):
         return f"({self.user} {self.project}) {self.date_updated}"
