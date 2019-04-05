@@ -35,14 +35,14 @@ class GeneratePayrollPDFTestCases(APITestCase):
 
         self.url_to_test = reverse('payroll-report', kwargs={'id': payroll.id})
 
-    def test_getting_a_payroll_report_with_the_valid_user(self):
+    def test_downloading_a_payroll_report_with_the_valid_user(self):
         """
             Testing a valid user getting his own payroll.
         """
         response = self.valid_client.get(self.url_to_test, format='json')
         self.assertEqual(200, response.status_code)
 
-    def test_getting_a_payroll_report_with_unauthenticated_credentials(self):
+    def test_downloading_a_payroll_report_with_unauthenticated_credentials(self):
         """
              Test getting the payroll with unauthenticated credentials
         """
@@ -51,9 +51,33 @@ class GeneratePayrollPDFTestCases(APITestCase):
         # Unauthorized client
         self.assertEqual(401, response.status_code)
 
-    def test_getting_a_payroll_report_with_invalid_credentials(self):
+    def test_downloading_a_payroll_report_with_invalid_credentials(self):
         """
             Test getting the payroll with another credentials
+        """
+        response = self.invalid_client.get(self.url_to_test, format='json')
+        # Forbidden Client
+        self.assertEqual(403, response.status_code)
+
+    def test_sending_a_payroll_report_with_the_valid_user(self):
+        """
+            Testing a valid user sending his own payroll.
+        """
+        response = self.valid_client.get(self.url_to_test, format='json')
+        self.assertEqual(200, response.status_code)
+
+    def test_sending_a_payroll_report_with_unauthenticated_credentials(self):
+        """
+             Test sending the payroll with unauthenticated credentials
+        """
+        unauth_client = APIClient()
+        response = unauth_client.get(self.url_to_test, format='json')
+        # Unauthorized client
+        self.assertEqual(401, response.status_code)
+
+    def test_sending_a_payroll_report_with_invalid_credentials(self):
+        """
+            Test sending the payroll with another credentials
         """
         response = self.invalid_client.get(self.url_to_test, format='json')
         # Forbidden Client

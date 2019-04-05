@@ -45,9 +45,13 @@
         </tr>
         <tr>
           <button (click)="downloadPDF()"> Download PDF </button>
+          <button [disabled]="sendingEmail" (click)="sendPDF()"> Send PDF </button>
         </tr>
       </tbody>
     </table>
+    <p [hidden]="!emailCallbackMessage">
+      {{ emailCallbackMessage }}
+    </p>
   </section>
   <div class="payroll-detail" [hidden]="state.params.id">
     No payroll atm..

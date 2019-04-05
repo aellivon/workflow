@@ -9,6 +9,7 @@ from urllib.parse import quote
 
 from django.conf import settings
 from django.core.files.base import ContentFile
+from django.core.mail import EmailMessage
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, _get_queryset
 from django.template.loader import get_template
@@ -45,32 +46,66 @@ class Query(object):
 class PDFHelper(object):
     """ Helper on pdf related stuffs
     """
-    def produce_payroll_pdf(self, data):
+    def produce_payroll_pdf_as_a_response(self, data):
+        html, pdf_details = self.prepare_payroll_processing(data)
+        return self._produce_pdf_as_a_response(html)
 
-        report_phrase = f"from {data.get('date_from')} to {data.get('date_to')}"
+    def produce_payroll_as_an_attachment(self, data):
+        html, pdf_details = self.prepare_payroll_processing(data)
+        return self._produce_pdf_as_an_attachment(html, pdf_details)
+
+    def prepare_payroll_processing(self, data):
+        date_phrase = f"from {data.get('date_from')} to {data.get('date_to')}"
         employee_name = f"{data.get('user').get('first_name')} {data.get('user').get('last_name')}"
 
-        title = f"payroll of {employee_name} {report_phrase}" 
+        title = f"payroll of {employee_name} {date_phrase}" 
+
         # # fetching and setting up necessary data
         context = {'data': data, 'title': title}
         template = get_template('report/payroll_report.html')
+        html = template.render(context)
 
-        return self._produce_pdf(context, template)
+        pdf_details = {
+            "title": title,
+            "payroll_owner": data.get('user').get('email')
+        }
+        return html, pdf_details
 
-    def _produce_pdf(self, context, template):
+    def _produce_pdf_as_an_attachment(self, html, pdf_details):
+        """
+            This produces any html that is passed as an attachment
+        """
+        result = BytesIO()
+        pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+        return result.getvalue(), pdf_details
 
+    def _produce_pdf_as_a_response(self, html):
+        """
+            This produces any html that is passed as a pdf response
+        """
         # Create a Django response object, and specify content_type as pdf
         response = HttpResponse(content_type='application/pdf')
         # Define that this is an attachment. 
         response['Content-Disposition'] = 'attachment;'
-
-        # find the template and render it.
-        html = template.render(context)
-
-        # create a pdf
         pisaStatus = pisa.CreatePDF(html, dest=response)
-
+        
         return response
+
+class MailHelper(object):
+    """ Email helper
+    """
+
+    def send_payroll_email(self, pdf, pdf_details):
+        # Payroll report details
+        subject = "Payroll Report"
+        message = "Attached here is a copy of your payroll report."
+        sender = settings.EMAIL
+        receipent = pdf_details.get("payroll_owner")
+
+        # Sending the actual email
+        email = EmailMessage(subject, message, sender, [receipent])
+        email.attach(pdf_details.get("title"), pdf, 'application/pdf')
+        email.send()
 
 class PermissionHelper(object):
     """ Permissions helper

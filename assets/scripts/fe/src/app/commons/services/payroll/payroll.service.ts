@@ -45,5 +45,11 @@ export class PayrollService {
        data => { downloadFileHanlder(data, fileName) }
      )
   }
-
-}
+  
+  sendPayrollReport(id){
+    return this.http.post(PAYROLL_REPORT(id), null)
+    .toPromise()
+    .then(resp => { return resp; })
+    .catch(err => { return Promise.reject(err); });
+  }
+} 

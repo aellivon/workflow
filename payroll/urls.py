@@ -12,5 +12,6 @@ urlpatterns = [
     
     path('<int:id>/report/', PayrollReport.as_view({
         'get': 'download_pdf',
+        'post': 'send_pdf'
     }), name='payroll-report'),
 ]
