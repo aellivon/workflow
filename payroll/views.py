@@ -61,5 +61,4 @@ class PayrollReport(Query, PDFHelper, MailHelper, ViewSet):
         pdf, pdf_details = self.produce_payroll_as_an_attachment(serializer.data)
         self.send_payroll_email(pdf, pdf_details);
         return Response({}, status=200)
-        
 

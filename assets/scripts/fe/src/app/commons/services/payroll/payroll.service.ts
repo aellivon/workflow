@@ -5,6 +5,7 @@ import { urlsafe, queryparams } from '../../utils/http.utils';
 import { PAYROLL, PAYROLL_REPORT } from '../../constants/api.constants';
 import { downloadFileHanlder } from '../../utils/file.utils';
 
+import { HttpHeaders } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })

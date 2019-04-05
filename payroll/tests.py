@@ -80,4 +80,3 @@ class GeneratePayrollPDFTestCases(APITestCase):
         # Forbidden Client
         self.assertEqual(403, response.status_code)
 
-
