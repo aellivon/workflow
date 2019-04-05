@@ -25,4 +25,12 @@ export class PayrollComponent implements OnInit {
     }
   }
 
+  downloadPDF() {
+    // Constructing the file name for the pdf
+    const report_phrase = `${this.payroll.date_from} to ${this.payroll.date_to}`;
+    const employee_name = `${this.payroll.user.first_name} to ${this.payroll.user.last_name}`;
+    const file_name = `payroll of ${employee_name} ${report_phrase}`;
+    this.payrollservice.downloadPDF(this.state.params.id, file_name);
+  }
+
 }

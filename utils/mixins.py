@@ -9,9 +9,12 @@ from urllib.parse import quote
 
 from django.conf import settings
 from django.core.files.base import ContentFile
-from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, _get_queryset
+from django.template.loader import get_template
 from django.utils import timezone
 
+from xhtml2pdf import pisa
 
 class Query(object):
     """ helper class used for querying with
@@ -38,7 +41,55 @@ class Query(object):
             keyword arguments.
         """
         return _model.objects.filter(**kwargs)
-    
+
+class PDFHelper(object):
+    """ Helper on pdf related stuffs
+    """
+    def produce_payroll_pdf(self, data):
+
+        report_phrase = f"from {data.get('date_from')} to {data.get('date_to')}"
+        employee_name = f"{data.get('user').get('first_name')} {data.get('user').get('last_name')}"
+
+        title = f"payroll of {employee_name} {report_phrase}" 
+        # # fetching and setting up necessary data
+        context = {'data': data, 'title': title}
+        template = get_template('report/payroll_report.html')
+
+        return self._produce_pdf(context, template)
+
+    def _produce_pdf(self, context, template):
+
+        # Create a Django response object, and specify content_type as pdf
+        response = HttpResponse(content_type='application/pdf')
+        # Define that this is an attachment. 
+        response['Content-Disposition'] = 'attachment;'
+
+        # find the template and render it.
+        html = template.render(context)
+
+        # create a pdf
+        pisaStatus = pisa.CreatePDF(html, dest=response)
+
+        return response
+
+class PermissionHelper(object):
+    """ Permissions helper
+    """
+
+    def check_get_query_result_if_exists(self, model, *args, **kwargs):
+        """
+            Checks if the query exists, return True if it exists, else false
+        """
+        # Allows dynamic get querysets
+        queryset = _get_queryset(model)
+
+        try:
+            # Put the args and kwargs in the filter for filtering
+            exists = queryset.get(*args, **kwargs)
+            return True
+        except queryset.model.DoesNotExist as e:
+            # If queryset does not exist. Return False
+            return False
 
 class ImageDownload(object):
     """ image downloader
